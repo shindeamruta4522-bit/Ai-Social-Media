@@ -88,29 +88,33 @@ async def lookup_firebase_user(token: str) -> dict | None:
     if not settings.firebase_api_key:
         return None
 
-    async with httpx.AsyncClient(timeout=20) as client:
-        response = await client.post(
-            f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={settings.firebase_api_key}",
-            json={"idToken": token},
-        )
-        if response.status_code >= 400:
-            return None
-        payload = response.json()
-        users = payload.get("users", [])
-        if not users:
-            return None
-        user = users[0]
-        provider = "password"
-        provider_data = user.get("providerUserInfo") or []
-        if provider_data:
-            provider = provider_data[0].get("providerId", provider)
-        return {
-            "email": user.get("email"),
-            "name": user.get("displayName") or (user.get("email") or "").split("@")[0].title(),
-            "picture": user.get("photoUrl"),
-            "uid": user.get("localId") or user.get("email"),
-            "firebase": {"sign_in_provider": provider},
-        }
+    try:
+        async with httpx.AsyncClient(timeout=20) as client:
+            response = await client.post(
+                f"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={settings.firebase_api_key}",
+                json={"idToken": token},
+            )
+    except httpx.HTTPError:
+        return None
+
+    if response.status_code >= 400:
+        return None
+    payload = response.json()
+    users = payload.get("users", [])
+    if not users:
+        return None
+    user = users[0]
+    provider = "password"
+    provider_data = user.get("providerUserInfo") or []
+    if provider_data:
+        provider = provider_data[0].get("providerId", provider)
+    return {
+        "email": user.get("email"),
+        "name": user.get("displayName") or (user.get("email") or "").split("@")[0].title(),
+        "picture": user.get("photoUrl"),
+        "uid": user.get("localId") or user.get("email"),
+        "firebase": {"sign_in_provider": provider},
+    }
 
 
 async def get_current_user(
