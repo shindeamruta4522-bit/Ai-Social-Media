@@ -30,6 +30,8 @@ async def lifespan(app: FastAPI):
 
 configure_logging()
 settings = get_settings()
+settings.uploads_dir.mkdir(parents=True, exist_ok=True)
+settings.reports_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 app.add_middleware(

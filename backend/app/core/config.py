@@ -1,4 +1,5 @@
 from functools import lru_cache
+from os import getenv
 from pathlib import Path
 
 from pydantic import AliasChoices, Field
@@ -6,6 +7,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 BASE_DIR = Path(__file__).resolve().parents[2]
+IS_VERCEL = bool(getenv("VERCEL"))
+VERCEL_DATA_DIR = Path("/tmp/ai-social-media")
 
 
 class Settings(BaseSettings):
@@ -78,8 +81,8 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("X_LIVE_TIMEOUT_SECONDS", "X_APIFY_TIMEOUT_SECONDS"),
     )
 
-    uploads_dir: Path = BASE_DIR / "uploads"
-    reports_dir: Path = BASE_DIR / "app" / "static" / "reports"
+    uploads_dir: Path = VERCEL_DATA_DIR / "uploads" if IS_VERCEL else BASE_DIR / "uploads"
+    reports_dir: Path = VERCEL_DATA_DIR / "reports" if IS_VERCEL else BASE_DIR / "app" / "static" / "reports"
 
     sentiment_model_name: str = "cardiffnlp/twitter-xlm-roberta-base-sentiment"
     toxicity_model_name: str = "unitary/multilingual-toxic-xlm-roberta"

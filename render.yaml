@@ -1,0 +1,88 @@
+services:
+  - type: web
+    name: ai-social-media-api-shindeamruta
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: APP_NAME
+        value: Ai Social Media
+      - key: API_PREFIX
+        value: /api
+      - key: DEMO_MODE
+        value: "true"
+      - key: AUTH_FALLBACK_ENABLED
+        value: "false"
+      - key: PREVIEW_CACHE_TTL_SECONDS
+        value: "300"
+      - key: DASHBOARD_CACHE_TTL_SECONDS
+        value: "180"
+      # Attach a persistent disk at /var/data on a paid plan to retain uploads
+      # and generated reports across service restarts and deployments.
+      - key: UPLOADS_DIR
+        value: /var/data/uploads
+      - key: REPORTS_DIR
+        value: /var/data/reports
+      - key: FRONTEND_URL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FIRST_ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_DB_NAME
+        value: ai_social_media
+      - key: REDIS_URL
+        sync: false
+      - key: FIREBASE_API_KEY
+        sync: false
+      - key: FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_STORAGE_BUCKET
+        sync: false
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: FIREBASE_APP_ID
+        sync: false
+      - key: FIREBASE_MEASUREMENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GOOGLE_REDIRECT_URI
+        sync: false
+      - key: META_APP_ID
+        sync: false
+      - key: META_APP_SECRET
+        sync: false
+      - key: META_REDIRECT_URI
+        sync: false
+      - key: META_API_VERSION
+        value: v25.0
+      - key: X_LIVE_SOURCE_TOKEN
+        sync: false
+      - key: X_LIVE_SOURCE_ACTOR_ID
+        value: danek~twitter-scraper-ppr
+      - key: X_LIVE_TIMELINE_MAX_POSTS
+        value: "36"
+      - key: X_LIVE_SEARCH_MAX_POSTS
+        value: "48"
+      - key: X_LIVE_POST_DETAIL_MAX_POSTS
+        value: "1"
+      - key: X_LIVE_TRENDING_COUNTRY
+        value: United States
+      - key: X_LIVE_TIMEOUT_SECONDS
+        value: "45"
